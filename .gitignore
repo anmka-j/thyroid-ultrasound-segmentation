@@ -1,0 +1,19 @@
+# Ignore dataset folders and archives
+data/
+*.zip
+*.tar.gz
+
+# Python & PyTorch cache
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Weights and outputs
+checkpoints/
+*.pth
+*.pt
+runs/
+outputs/
+logs/
+.vscode/
+.idea/
