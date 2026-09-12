@@ -42,19 +42,28 @@ IMAGENET_STD  = (0.229, 0.224, 0.225)
 
 
 def get_train_transform(img_size: int = 256) -> A.Compose:
-    """Albumentations pipeline for training (with geometric augmentations)."""
+    """Albumentations pipeline for training (geometric & photometric augmentations)."""
     return A.Compose([
         A.Resize(img_size, img_size),
         A.HorizontalFlip(p=0.5),
-        A.VerticalFlip(p=0.5),
-        A.Rotate(limit=15, p=0.5, border_mode=cv2.BORDER_CONSTANT),
+        A.RandomBrightnessContrast(p=0.2),
+        A.ElasticTransform(alpha=1, sigma=50, p=0.3),
         A.Normalize(mean=IMAGENET_MEAN, std=IMAGENET_STD),
         ToTensorV2(),
     ])
 
 
 def get_val_transform(img_size: int = 256) -> A.Compose:
-    """Albumentations pipeline for validation / testing (deterministic resize & normalize)."""
+    """Albumentations pipeline for validation (deterministic resize & normalize)."""
+    return A.Compose([
+        A.Resize(img_size, img_size),
+        A.Normalize(mean=IMAGENET_MEAN, std=IMAGENET_STD),
+        ToTensorV2(),
+    ])
+
+
+def get_test_transform(img_size: int = 256) -> A.Compose:
+    """Albumentations pipeline for test evaluation (deterministic resize & normalize)."""
     return A.Compose([
         A.Resize(img_size, img_size),
         A.Normalize(mean=IMAGENET_MEAN, std=IMAGENET_STD),
@@ -214,6 +223,7 @@ def get_loaders(
     # ── Transforms ────────────────────────────────────────────
     train_tf = get_train_transform(img_size)
     val_tf   = get_val_transform(img_size)
+    test_tf  = get_test_transform(img_size)
 
     # ── Datasets ──────────────────────────────────────────────
     train_ds = TN3kDataset(
@@ -232,7 +242,7 @@ def get_loaders(
         image_dir=test_img_dir,
         mask_dir=test_mask_dir,
         filenames_or_stems=None,
-        transform=val_tf,
+        transform=test_tf,
     )
 
     # ── Loaders ───────────────────────────────────────────────
@@ -271,25 +281,45 @@ if __name__ == "__main__":
     print(f"  Val   batches : {len(val_loader)}  ({len(val_loader.dataset)} samples)")
     print(f"  Test  batches : {len(test_loader)}  ({len(test_loader.dataset)} samples)")
 
-    # Pull one batch from train loader
+    # 1. Verify single dataset item return
+    train_ds = train_loader.dataset
+    single_img, single_mask = train_ds[0]
+    print(f"\n[SANITY CHECK] Single sample:")
+    print(f"  Single image shape : {single_img.shape}")
+    print(f"  Single mask shape  : {single_mask.shape}")
+    print(f"  Single mask unique : {single_mask.unique().tolist()}")
+
+    assert single_img.shape == (3, 256, 256), (
+        f"Expected single image shape (3, 256, 256), got {single_img.shape}"
+    )
+    assert single_mask.shape == (1, 256, 256), (
+        f"Expected single mask shape (1, 256, 256), got {single_mask.shape}"
+    )
+    single_mask_vals = set(single_mask.unique().tolist())
+    assert single_mask_vals.issubset({0.0, 1.0}), (
+        f"Single mask values must be strictly within {{0.0, 1.0}}, got {single_mask_vals}"
+    )
+
+    # 2. Verify DataLoader mini-batch
     images, masks = next(iter(train_loader))
-    print(f"\n[SANITY CHECK] Train batch:")
-    print(f"  Image shape  : {images.shape}")
-    print(f"  Mask shape   : {masks.shape}")
-    print(f"  Image dtype  : {images.dtype}")
-    print(f"  Mask dtype   : {masks.dtype}")
-    print(f"  Image range  : [{images.min():.4f}, {images.max():.4f}]")
-    print(f"  Mask unique  : {masks.unique().tolist()}")
+    print(f"\n[SANITY CHECK] Mini-batch (B=16):")
+    print(f"  Image batch shape  : {images.shape}")
+    print(f"  Mask batch shape   : {masks.shape}")
+    print(f"  Image dtype        : {images.dtype}")
+    print(f"  Mask dtype         : {masks.dtype}")
+    print(f"  Image range        : [{images.min():.4f}, {images.max():.4f}]")
+    print(f"  Mask unique        : {masks.unique().tolist()}")
 
-    # Assertions
-    assert images.shape == (16, 3, 256, 256), \
-        f"Expected image shape (16, 3, 256, 256), got {images.shape}"
-    assert masks.shape == (16, 1, 256, 256), \
-        f"Expected mask shape (16, 1, 256, 256), got {masks.shape}"
-
+    assert images.shape == (16, 3, 256, 256), (
+        f"Expected batch image shape (16, 3, 256, 256), got {images.shape}"
+    )
+    assert masks.shape == (16, 1, 256, 256), (
+        f"Expected batch mask shape (16, 1, 256, 256), got {masks.shape}"
+    )
     mask_vals = set(masks.unique().tolist())
-    assert mask_vals.issubset({0.0, 1.0}), \
-        f"Mask values must be strictly within {{0.0, 1.0}}, got {mask_vals}"
+    assert mask_vals.issubset({0.0, 1.0}), (
+        f"Batch mask values must be strictly within {{0.0, 1.0}}, got {mask_vals}"
+    )
 
     print("\n=== ALL ASSERTIONS PASSED ===")
 
