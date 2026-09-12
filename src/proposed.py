@@ -335,3 +335,7 @@ class ResAttentionUNet(nn.Module):
         d1 = self.dec1(d2, s1)
 
         return self.final_conv(d1)
+
+
+# Alias to support both naming conventions
+CustomAttentionUNet = ResAttentionUNet
