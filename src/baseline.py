@@ -80,6 +80,10 @@ class UNet(nn.Module):
         Number of input channels (RGB replicated ultrasound scans).
     out_channels : int, default=1
         Number of output channels (1 for binary segmentation logits).
+        after doubleconv passed into a 2x2 maxpool2d fro downsampling
+        2x2 convtranspose2d upsampling
+        channel concatenation
+        31.04M param.
     """
 
     def __init__(self, in_channels: int = 3, out_channels: int = 1):

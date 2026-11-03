@@ -1,21 +1,29 @@
-# Ignore dataset folders and archives
+# ==========================================
+# 1. Dataset & Raw Data (DO NOT PUSH)
+# ==========================================
 data/
+tn3k/
 *.zip
 *.tar.gz
+*.tar
+*.gz
 
-# Python & PyTorch cache
+# ==========================================
+# 2. Python & IDE Caches (System junk)
+# ==========================================
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
 .ipynb_checkpoints/
+.vscode/
+.idea/
+.venv/
+env/
+venv/
 
-# Weights and outputs
+# ==========================================
+# 3. Model Checkpoints (See 100 MB note below)
+# ==========================================
 checkpoints/
 *.pth
 *.pt
-runs/
-outputs/
-logs/
-.vscode/
-.idea/
-tn3k/
-

@@ -1,0 +1,128 @@
+{
+  "baseline": {
+    "model_configuration": "Vanilla U-Net (Baseline)",
+    "attention_mechanism": "None",
+    "loss_function": "BCEWithLogitsLoss",
+    "checkpoint_path": "checkpoints/best_baseline.pth",
+    "checkpoint_found": true,
+    "status": "EVALUATED",
+    "calibrated_threshold": 0.5,
+    "test_dice": 0.7838,
+    "test_iou": 0.6906,
+    "num_test_samples": 614,
+    "threshold_sweep": {
+      "0.20": {
+        "test_dice": 0.7216,
+        "test_iou": 0.6057
+      },
+      "0.25": {
+        "test_dice": 0.7413,
+        "test_iou": 0.6305
+      },
+      "0.30": {
+        "test_dice": 0.7553,
+        "test_iou": 0.6489
+      },
+      "0.35": {
+        "test_dice": 0.7657,
+        "test_iou": 0.6634
+      },
+      "0.40": {
+        "test_dice": 0.7735,
+        "test_iou": 0.6747
+      },
+      "0.45": {
+        "test_dice": 0.7799,
+        "test_iou": 0.6842
+      },
+      "0.50": {
+        "test_dice": 0.7838,
+        "test_iou": 0.6906
+      }
+    }
+  },
+  "ablation": {
+    "model_configuration": "Res-UNet (Ablation)",
+    "attention_mechanism": "None (Disabled)",
+    "loss_function": "BCEDiceLoss",
+    "checkpoint_path": "checkpoints/best_ablation.pth",
+    "checkpoint_found": true,
+    "status": "EVALUATED",
+    "calibrated_threshold": 0.35,
+    "test_dice": 0.7199,
+    "test_iou": 0.6056,
+    "num_test_samples": 614,
+    "threshold_sweep": {
+      "0.20": {
+        "test_dice": 0.7156,
+        "test_iou": 0.5988
+      },
+      "0.25": {
+        "test_dice": 0.7179,
+        "test_iou": 0.6022
+      },
+      "0.30": {
+        "test_dice": 0.7193,
+        "test_iou": 0.6044
+      },
+      "0.35": {
+        "test_dice": 0.7199,
+        "test_iou": 0.6056
+      },
+      "0.40": {
+        "test_dice": 0.7199,
+        "test_iou": 0.6061
+      },
+      "0.45": {
+        "test_dice": 0.7194,
+        "test_iou": 0.6059
+      },
+      "0.50": {
+        "test_dice": 0.7184,
+        "test_iou": 0.6052
+      }
+    }
+  },
+  "proposed": {
+    "model_configuration": "Res-Attention U-Net (Proposed)",
+    "attention_mechanism": "Additive Spatial Attention",
+    "loss_function": "BCEDiceLoss",
+    "checkpoint_path": "checkpoints/best_proposed.pth",
+    "checkpoint_found": true,
+    "status": "EVALUATED",
+    "calibrated_threshold": 0.5,
+    "test_dice": 0.6772,
+    "test_iou": 0.5641,
+    "num_test_samples": 614,
+    "threshold_sweep": {
+      "0.20": {
+        "test_dice": 0.6383,
+        "test_iou": 0.5193
+      },
+      "0.25": {
+        "test_dice": 0.6479,
+        "test_iou": 0.5302
+      },
+      "0.30": {
+        "test_dice": 0.6554,
+        "test_iou": 0.5388
+      },
+      "0.35": {
+        "test_dice": 0.6616,
+        "test_iou": 0.546
+      },
+      "0.40": {
+        "test_dice": 0.6672,
+        "test_iou": 0.5525
+      },
+      "0.45": {
+        "test_dice": 0.6725,
+        "test_iou": 0.5586
+      },
+      "0.50": {
+        "test_dice": 0.6772,
+        "test_iou": 0.5641
+      }
+    }
+  }
+}
